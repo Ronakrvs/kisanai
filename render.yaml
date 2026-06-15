@@ -1,0 +1,83 @@
+services:
+  # Go API Gateway
+  - type: web
+    name: kisanai-gateway
+    runtime: docker
+    dockerfilePath: ./backend-go/Dockerfile
+    dockerContext: ./backend-go
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DISEASE_SERVICE_URL
+        fromService:
+          name: kisanai-disease
+          type: web
+          property: host
+      - key: FERTILIZER_SERVICE_URL
+        fromService:
+          name: kisanai-fertilizer
+          type: web
+          property: host
+      - key: YIELD_SERVICE_URL
+        fromService:
+          name: kisanai-yield
+          type: web
+          property: host
+      - key: CHATBOT_SERVICE_URL
+        fromService:
+          name: kisanai-chatbot
+          type: web
+          property: host
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+
+  # Disease Detection
+  - type: web
+    name: kisanai-disease
+    runtime: docker
+    dockerfilePath: ./services/disease-service/Dockerfile
+    dockerContext: ./services/disease-service
+    plan: free
+    envVars:
+      - key: MODEL_PATH
+        value: /app/models/disease_model.onnx
+
+  # Fertilizer Recommendation
+  - type: web
+    name: kisanai-fertilizer
+    runtime: docker
+    dockerfilePath: ./services/fertilizer-service/Dockerfile
+    dockerContext: ./services/fertilizer-service
+    plan: free
+    envVars:
+      - key: MODEL_PATH
+        value: /app/models/fertilizer_model.joblib
+
+  # Yield Prediction
+  - type: web
+    name: kisanai-yield
+    runtime: docker
+    dockerfilePath: ./services/yield-service/Dockerfile
+    dockerContext: ./services/yield-service
+    plan: free
+    envVars:
+      - key: MODEL_PATH
+        value: /app/models/yield_model.joblib
+
+  # Chatbot
+  - type: web
+    name: kisanai-chatbot
+    runtime: docker
+    dockerfilePath: ./services/chatbot-service/Dockerfile
+    dockerContext: ./services/chatbot-service
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: LLM_MODEL
+        value: llama3
+      - key: EMBED_MODEL
+        value: BAAI/bge-small-en-v1.5
