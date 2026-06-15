@@ -26,9 +26,13 @@ func ProxyTo(targetURL string) fiber.Handler {
 			req.ContentLength = int64(len(body))
 		}
 
-		// Forward headers
+		// Forward headers, but strip Accept-Encoding so Go's HTTP client
+		// handles decompression transparently (auto-decompress requires
+		// that Accept-Encoding was NOT explicitly set by the caller).
 		c.Request().Header.VisitAll(func(k, v []byte) {
-			req.Header.Set(string(k), string(v))
+			if string(k) != "Accept-Encoding" {
+				req.Header.Set(string(k), string(v))
+			}
 		})
 
 		// Propagate user identity
