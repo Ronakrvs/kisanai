@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Users (mirrors Supabase auth.users)
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY,
     name TEXT,
     phone TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
