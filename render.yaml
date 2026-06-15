@@ -10,29 +10,17 @@ services:
       - key: PORT
         value: 8080
       - key: DISEASE_SERVICE_URL
-        fromService:
-          name: kisanai-disease
-          type: web
-          property: host
+        value: https://kisanai-disease.onrender.com/predict
       - key: FERTILIZER_SERVICE_URL
-        fromService:
-          name: kisanai-fertilizer
-          type: web
-          property: host
+        value: https://kisanai-fertilizer.onrender.com/recommend
       - key: YIELD_SERVICE_URL
-        fromService:
-          name: kisanai-yield
-          type: web
-          property: host
+        value: https://kisanai-yield.onrender.com/predict
       - key: CHATBOT_SERVICE_URL
-        fromService:
-          name: kisanai-chatbot
-          type: web
-          property: host
+        value: https://kisanai-chatbot.onrender.com/chat
       - key: SUPABASE_JWT_SECRET
-        sync: false
+        value: 80944479-b868-468c-b90d-894c7c2256
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: https://frontend-kke6n2zio-ronaks-projects-0e453fa2.vercel.app
 
   # Disease Detection
   - type: web
