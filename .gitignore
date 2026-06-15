@@ -20,9 +20,6 @@ dist/
 build/
 .pytest_cache/
 *.pt
-*.onnx
-*.pkl
-*.joblib
 
 # Go
 bin/
@@ -30,10 +27,9 @@ bin/
 *.test
 vendor/
 
-# Models
-services/*/models/*.onnx
-services/*/models/*.pt
-services/*/models/*.pkl
+# Models (allow small trained models; exclude large disease/pt files)
+services/disease-service/models/*.onnx
+services/disease-service/models/*.pt
 
 # Misc
 .DS_Store
