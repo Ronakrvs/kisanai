@@ -20,7 +20,7 @@ services:
       - key: SUPABASE_JWT_SECRET
         value: 80944479-b868-468c-b90d-894c7c2256
       - key: ALLOWED_ORIGINS
-        value: https://frontend-kke6n2zio-ronaks-projects-0e453fa2.vercel.app
+        value: https://frontend-theta-henna-54.vercel.app,https://frontend-kke6n2zio-ronaks-projects-0e453fa2.vercel.app,https://frontend-gqrcf8gk2-ronaks-projects-0e453fa2.vercel.app
 
   # Disease Detection
   - type: web
