@@ -1,0 +1,117 @@
+version: "3.9"
+
+services:
+  # PostgreSQL with pgvector
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: kisanai
+      POSTGRES_PASSWORD: kisanai_secret
+      POSTGRES_DB: kisanai_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kisanai"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Ollama (LLM runtime)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # Pull llama3 on first start
+    entrypoint: ["/bin/bash", "-c", "ollama serve & sleep 5 && ollama pull llama3 && wait"]
+
+  # Go API Gateway
+  gateway:
+    build:
+      context: ./backend-go
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: ./backend-go/.env
+    environment:
+      DATABASE_URL: postgres://kisanai:kisanai_secret@postgres:5432/kisanai_db
+      DISEASE_SERVICE_URL: http://disease-service:8001
+      FERTILIZER_SERVICE_URL: http://fertilizer-service:8002
+      YIELD_SERVICE_URL: http://yield-service:8003
+      CHATBOT_SERVICE_URL: http://chatbot-service:8004
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Disease Detection (Python)
+  disease-service:
+    build:
+      context: ./services/disease-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./services/disease-service/models:/app/models
+    environment:
+      MODEL_PATH: /app/models/disease_model.onnx
+
+  # Fertilizer Recommendation (Python)
+  fertilizer-service:
+    build:
+      context: ./services/fertilizer-service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./services/fertilizer-service/models:/app/models
+    environment:
+      MODEL_PATH: /app/models/fertilizer_model.joblib
+
+  # Yield Prediction (Python)
+  yield-service:
+    build:
+      context: ./services/yield-service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./services/yield-service/models:/app/models
+    environment:
+      MODEL_PATH: /app/models/yield_model.joblib
+
+  # Chatbot Service (Python)
+  chatbot-service:
+    build:
+      context: ./services/chatbot-service
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      DATABASE_URL: postgres://kisanai:kisanai_secret@postgres:5432/kisanai_db
+      LLM_MODEL: llama3
+      EMBED_MODEL: BAAI/bge-small-en-v1.5
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file: ./frontend/.env.local
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    depends_on:
+      - gateway
+
+volumes:
+  postgres_data:
+  ollama_data:
