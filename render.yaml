@@ -10,13 +10,13 @@ services:
       - key: PORT
         value: 8080
       - key: DISEASE_SERVICE_URL
-        value: https://kisanai-disease.onrender.com/predict
+        value: https://kisanai-disease.onrender.com
       - key: FERTILIZER_SERVICE_URL
-        value: https://kisanai-fertilizer.onrender.com/recommend
+        value: https://kisanai-fertilizer.onrender.com
       - key: YIELD_SERVICE_URL
-        value: https://kisanai-yield.onrender.com/predict
+        value: https://kisanai-yield.onrender.com
       - key: CHATBOT_SERVICE_URL
-        value: https://kisanai-chatbot.onrender.com/chat
+        value: https://kisanai-chatbot.onrender.com
       - key: SUPABASE_JWT_SECRET
         value: 80944479-b868-468c-b90d-894c7c2256
       - key: ALLOWED_ORIGINS
