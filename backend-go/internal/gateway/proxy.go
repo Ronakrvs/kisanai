@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var httpClient = &http.Client{Timeout: 30 * time.Second}
+var httpClient = &http.Client{Timeout: 90 * time.Second}
 
 // ProxyTo forwards the incoming request to targetURL and streams back the response.
 func ProxyTo(targetURL string) fiber.Handler {
